@@ -8,6 +8,7 @@ license = "MIT"
 categories = ["no-std", "no-std::no-alloc", "text-processing"]
 edition = "2018"
 readme = "README.md"
+repository = "https://github.com/Omena-Palette/static_format"
 
 [lib]
 proc-macro = true
