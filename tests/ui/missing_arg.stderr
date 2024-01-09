@@ -1,0 +1,7 @@
+error: Wrong number of arguments, expected: 1 but found 0
+ --> tests/ui/missing_arg.rs:4:16
+  |
+4 |     let _out = const_format!("hello world missing argument {}");
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `const_format` (in Nightly builds, run with -Z macro-backtrace for more info)

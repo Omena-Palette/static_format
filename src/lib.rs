@@ -59,7 +59,13 @@ impl Parse for ArgType {
         if let Ok(accepted_lit) = input.parse::<AcceptedLit>() {
             Ok(Self::Literal(accepted_lit))
         } else {
-            Ok(Self::Expr(input.parse()?))
+            Ok(Self::Expr(input.parse().map_err(|_| {
+                Error::new(
+                    input.span(),
+                    "Invalid argument, must be a literal or macro invocation. \
+                     (Same constraints as `concat!`)"
+                )
+            })?))
         }
     }
 }
@@ -89,7 +95,12 @@ impl Deref for Template {
 
 impl Parse for Template {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        let lit: LitStr = input.parse()?;
+        let lit: LitStr = input.parse()
+            .map_err(|_| Error::new(
+                input.span(),
+                "Requires at least one argument. \
+                 Please provide the necessary format string and arguments."
+            ))?;
         Ok(Self { slots: lit.value().split("{}").map(String::from).collect() })
     }
 }
@@ -115,7 +126,7 @@ impl Parse for Format {
                 input.span(),
                 format!(
                     "Wrong number of arguments, expected: {} but found {}",
-                    template.len(), arguments.len()
+                    template.len() - 1, arguments.len() - 1
                 )
             ));
         }

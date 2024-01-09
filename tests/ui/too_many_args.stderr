@@ -1,0 +1,7 @@
+error: Wrong number of arguments, expected: 1 but found 2
+ --> tests/ui/too_many_args.rs:4:16
+  |
+4 |     let _out = const_format!("hello world with too many provided arguments {}", "hello", "world");
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `const_format` (in Nightly builds, run with -Z macro-backtrace for more info)
