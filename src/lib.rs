@@ -10,12 +10,18 @@
 
 extern crate proc_macro;
 use proc_macro::TokenStream;
+use std::convert::TryFrom;
 use std::ops::Deref;
 use syn::{parse_macro_input, LitStr, LitInt, LitBool, Expr, Error};
 use quote::{quote, ToTokens};
 
 use syn::parse::{Parse, ParseStream};
+use syn::spanned::Spanned;
 use syn::token::Comma;
+
+macro_rules! concat_anecdote {
+    ($msg:literal) => {concat!($msg, " (Same constraints as `concat!`)")}
+}
 
 enum AcceptedLit {
     Int(LitInt),
@@ -54,18 +60,32 @@ enum ArgType {
     Filler
 }
 
+impl TryFrom<Expr> for ArgType {
+    type Error = Error;
+
+    fn try_from(value: Expr) -> Result<Self, Self::Error> {
+        if matches!(value, Expr::Macro(_)) {
+            Ok(Self::Expr(value))
+        } else {
+            Err(Error::new(
+                value.span(),
+                concat_anecdote!("All arguments must be or expand into literals.")
+            ))
+        }
+    }
+}
+
 impl Parse for ArgType {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         if let Ok(accepted_lit) = input.parse::<AcceptedLit>() {
             Ok(Self::Literal(accepted_lit))
         } else {
-            Ok(Self::Expr(input.parse().map_err(|_| {
+            Self::try_from(input.parse::<Expr>().map_err(|_| {
                 Error::new(
                     input.span(),
-                    "Invalid argument, must be a literal or macro invocation. \
-                     (Same constraints as `concat!`)"
+                    concat_anecdote!("Invalid argument, must be a literal or macro invocation.")
                 )
-            })?))
+            })?)
         }
     }
 }
@@ -80,7 +100,6 @@ impl ToTokens for ArgType {
     }
 }
 
-#[derive(Debug)]
 struct Template {
     slots: Vec<String>
 }

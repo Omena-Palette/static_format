@@ -1,0 +1,5 @@
+error: All arguments must be or expand into literals. (Same constraints as `concat!`)
+ --> tests/ui/invalid_arg.rs:8:25
+  |
+8 |     const_format!("{}", hello());
+  |                         ^^^^^
