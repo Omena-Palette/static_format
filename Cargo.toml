@@ -9,6 +9,11 @@ categories = ["no-std", "no-std::no-alloc", "text-processing"]
 edition = "2018"
 readme = "README.md"
 repository = "https://github.com/Omena-Palette/static_format"
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+    "README.md"
+]
 
 [lib]
 proc-macro = true
